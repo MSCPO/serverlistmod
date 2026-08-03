@@ -1,0 +1,21 @@
+{
+  "mscpo.title": "MSCPO Server List",
+  "mscpo.tab.all": "All",
+  "mscpo.tab.favorite": "Favorites",
+  "mscpo.tab.recent": "Recent",
+  "mscpo.search": "Search",
+  "mscpo.search.placeholder": "Search servers...",
+  "mscpo.filter.all": "All Categories",
+  "mscpo.filter.allSub": "All Sub-categories",
+  "mscpo.filter.category": "Category: %s",
+  "mscpo.filter.sub": "Sub-category: %s",
+  "mscpo.btn.join": "Join Server",
+  "mscpo.btn.favorite": "Favorite",
+  "mscpo.btn.unfavorite": "Unfavorite",
+  "mscpo.status.loading": "Loading...",
+  "mscpo.status.empty": "No servers",
+  "mscpo.status.error": "Failed to load. Click to retry",
+  "mscpo.status.noFavorite": "No favorited servers",
+  "mscpo.status.noRecent": "No recently played servers",
+  "mscpo.drawer.open": "MSCPO List"
+}

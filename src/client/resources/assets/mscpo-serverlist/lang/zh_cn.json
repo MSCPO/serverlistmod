@@ -1,0 +1,21 @@
+{
+  "mscpo.title": "MSCPO 服务器列表",
+  "mscpo.tab.all": "全部",
+  "mscpo.tab.favorite": "收藏",
+  "mscpo.tab.recent": "最近",
+  "mscpo.search": "搜索",
+  "mscpo.search.placeholder": "搜索服务器...",
+  "mscpo.filter.all": "全部分类",
+  "mscpo.filter.allSub": "全部子分类",
+  "mscpo.filter.category": "分类: %s",
+  "mscpo.filter.sub": "子分类: %s",
+  "mscpo.btn.join": "加入服务器",
+  "mscpo.btn.favorite": "收藏",
+  "mscpo.btn.unfavorite": "取消收藏",
+  "mscpo.status.loading": "加载中...",
+  "mscpo.status.empty": "暂无服务器",
+  "mscpo.status.error": "加载失败，点击重试",
+  "mscpo.status.noFavorite": "还没有收藏的服务器",
+  "mscpo.status.noRecent": "还没有玩过的服务器",
+  "mscpo.drawer.open": "MSCPO 列表"
+}
