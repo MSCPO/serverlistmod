@@ -4,6 +4,28 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            name = 'NeoForge'
+            url = 'https://maven.neoforged.net/releases/'
+        }
         gradlePluginPortal()
+        mavenCentral()
     }
 }
+
+dependencyResolutionManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            name = 'NeoForge'
+            url = 'https://maven.neoforged.net/releases/'
+        }
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'MSCPO-serverlist'
+include 'fabric', 'neoforge'

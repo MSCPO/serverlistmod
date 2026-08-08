@@ -2,8 +2,8 @@
 
 在 Minecraft 原版**多人游戏界面**右侧加入一个 MSCPO 服务器列表面板，方便浏览、搜索并一键加入由 [MSCPO](https://github.com/MSCPO)（Minecraft 服务器集体宣传组织）收录的服务器。
 
-- **Minecraft 版本**：1.21.11
-- **加载器**：Fabric（Fabric Loader ≥ 0.19.3，Fabric API）
+- **Minecraft 版本**：1.21.1 / 1.21.4 / 1.21.8 / 1.21.11 / 26.1.2（26.1 系列）/ 26.2
+- **加载器**：Fabric（Fabric Loader ≥ 0.19.3，Fabric API）与 NeoForge
 - **运行环境**：客户端（Client）专用
 
 ## 功能特性
@@ -27,7 +27,9 @@
 
 ## 安装
 
-1. 安装 [Fabric Loader](https://fabricmc.net/use/)（≥ 0.19.3）与对应版本的 [Fabric API](https://modrinth.com/mod/fabric-api)。
+1. 安装对应加载器：
+   - **Fabric**：[Fabric Loader](https://fabricmc.net/use/)（≥ 0.19.3）与对应版本的 [Fabric API](https://modrinth.com/mod/fabric-api)
+   - **NeoForge**：[NeoForge](https://neoforged.net/)（对应版本见产物文件名）
 2. 将构建产物 `MSCPO-serverlist-*.jar` 放入 `.minecraft/mods/` 目录。
 3. 启动游戏，进入「多人游戏」界面，点击右侧的 MSCPO 标签即可。
 
@@ -63,24 +65,46 @@
 
 ## 构建
 
-需要 **JDK 21** 与 Gradle。
+### 一键构建（推荐）
 
-```bash
-gradlew build
+直接使用本机 `D:\java` 下的 Gradle 9.5.1 与本地 JDK（zulu21 / zulu25）构建全部 12 个产物：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\build-all.ps1        # 构建全部版本
+powershell -ExecutionPolicy Bypass -File .\build-all.ps1 1.21.11 # 只构建指定版本
+powershell -ExecutionPolicy Bypass -File .\build-all.ps1 -Copy  # 构建并把 jar 复制到 .\dist
 ```
 
-构建产物位于 `build/libs/MSCPO-serverlist-1.0.jar`。
+支持版本：`26.2`、`26.1.2`、`1.21.11`、`1.21.8`、`1.21.4`、`1.21.1`。
 
-开发运行：
+### 手动构建
 
-```bash
-gradlew runClient
+需要本机 JDK（`D:\java\zulu21`，26.x 需要 `D:\java\zulu25`）与 Gradle：
+
+```powershell
+& 'D:\java\gradle-9.5.1\bin\gradle.bat' :fabric:build :neoforge:build -Pmc=1.21.11
 ```
+
+产物位于 `fabric\build\libs\` 与 `neoforge\build\libs\`，文件名带 `+<mc版本>` 后缀。
+
+## 项目结构
+
+```
+MSCPO-serverlist/
+├── shared-java/        # 跨加载器/跨版本的纯 Java 代码（API 客户端、配置存储等）
+├── shared-resources/   # 共享资源（语言文件、图标、Mixin 配置）
+├── gui/<mc版本>/java/  # 各 MC 版本专用的 GUI 与 Mixin（统一使用 Mojang 官方映射命名）
+├── fabric/             # Fabric 加载器模块
+└── neoforge/           # NeoForge 加载器模块
+```
+
+- 两个加载器共享同一份 `gui/<版本>` 源码（Mojang 官方映射，Fabric 侧亦使用 `officialMojangMappings`）。
+- 1.21.x（混淆版本）Fabric 使用常规 remap 插件；26.x（Mojang 已停止混淆的版本）Fabric 使用无 remap 插件 `net.fabricmc.fabric-loom`，加载器/API 以普通 `implementation` 依赖引入。
 
 ## 技术说明
 
-- 通过 Mixin 修改 `MultiplayerScreen`，在右侧叠加 MSCPO 面板，并实时调整原版服务器列表的宽度。
-- 服务器状态请求使用原版 `MultiplayerServerListPinger`，提交到独立的 8 线程守护线程池，避免阻塞渲染线程。
+- 通过 Mixin 修改 `JoinMultiplayerScreen`，在右侧叠加 MSCPO 面板，并实时调整原版服务器列表的宽度。
+- 服务器状态请求使用原版 `ServerStatusPinger`，提交到独立的 8 线程守护线程池，避免阻塞渲染线程。
 - Ping 结果有 5 分钟本地缓存，切换页签 / 刷新时不会重复请求。
 
 ## 许可证

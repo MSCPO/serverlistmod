@@ -1,0 +1,55 @@
+// Shared per-Minecraft-version configuration matrix.
+// Applied by both :fabric and :neoforge subprojects.
+
+def matrix = [
+    '1.21.1': [
+        java         : 21,
+        fabricLoader : '0.19.3',
+        fabricApi    : '0.116.15+1.21.1',
+        neoForge     : '21.1.238',
+    ],
+    '1.21.4': [
+        java         : 21,
+        fabricLoader : '0.19.3',
+        fabricApi    : '0.119.4+1.21.4',
+        neoForge     : '21.4.158',
+    ],
+    '1.21.8': [
+        java         : 21,
+        fabricLoader : '0.19.3',
+        fabricApi    : '0.136.1+1.21.8',
+        neoForge     : '21.8.54',
+    ],
+    '1.21.11': [
+        java         : 21,
+        fabricLoader : '0.19.3',
+        fabricApi    : '0.141.6+1.21.11',
+        neoForge     : '21.11.44',
+    ],
+    '26.1.2': [
+        java         : 25,
+        fabricLoader : '0.19.3',
+        fabricApi    : '0.155.2+26.1.2',
+        neoForge     : '26.1.2.93',
+    ],
+    '26.2': [
+        java         : 25,
+        fabricLoader : '0.19.3',
+        fabricApi    : '0.156.0+26.2',
+        neoForge     : '26.2.0.1-beta',
+    ],
+]
+
+def mc = providers.gradleProperty('mc').getOrElse('1.21.11')
+def entry = matrix[mc]
+if (entry == null) {
+    throw new GradleException("Unknown Minecraft version '${mc}'. Supported: ${matrix.keySet().sort()}")
+}
+
+ext.mc = mc
+ext.mcVersion = mc
+ext.javaVersion = entry.java as int
+ext.fabricLoaderVersion = entry.fabricLoader
+ext.fabricApiVersion = entry.fabricApi
+ext.neoForgeVersion = entry.neoForge
+ext.versionMatrix = matrix

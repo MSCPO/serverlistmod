@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "mscpo-serverlist"
+version = "${version}"
+displayName = "MSCPO-serverlist"
+description = "在原版多人游戏界面右侧增加 MSCPO 服务器列表列，支持搜索、分类筛选、加入、收藏与最近游玩。"
+authors = "mc506lw"
+displayURL = "https://github.com/MSCPO"
+logoFile = "assets/mscpo-serverlist/logo.png"
+
+[[mixins]]
+config = "mscpo-serverlist.mixins.json"
+
+[[dependencies.mscpo-serverlist]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neo_forge},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.mscpo-serverlist]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraft_version}]"
+ordering = "NONE"
+side = "CLIENT"

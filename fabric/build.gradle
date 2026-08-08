@@ -1,0 +1,81 @@
+plugins {
+    id 'fabric-loom' version "$loom_version" apply false
+    id 'net.fabricmc.fabric-loom' version "$loom_version" apply false
+    id 'java-library'
+}
+
+apply from: rootProject.file('gradle/mc-versions.gradle')
+
+// 1.21.x (obfuscated) uses the legacy remap plugin; 26.x (unobfuscated, no separate
+// mappings files shipped by Mojang) uses the non-remap plugin which skips remapping.
+def isUnobfuscated = ['26.2', '26.1.2'].contains(project.mc)
+apply plugin: isUnobfuscated ? 'net.fabricmc.fabric-loom' : 'fabric-loom'
+
+loom {
+    mods {
+        "mscpo-serverlist" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+
+version = "${project.mod_version}+Fabric-${project.mc}"
+group = project.maven_group
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(project.javaVersion)
+    withSourcesJar()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.mc}"
+    if (!isUnobfuscated) {
+        // Official Mojang mappings so both loaders share the same GUI source.
+        mappings loom.officialMojangMappings()
+        modImplementation "net.fabricmc:fabric-loader:${project.fabricLoaderVersion}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabricApiVersion}"
+    } else {
+        // Unobfuscated (26.x) versions need no remapping, so loader/API are plain deps.
+        implementation "net.fabricmc:fabric-loader:${project.fabricLoaderVersion}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${project.fabricApiVersion}"
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir rootProject.file('shared-java')
+            srcDir rootProject.file("gui/${project.mc}/java")
+        }
+        resources {
+            srcDir rootProject.file('shared-resources')
+        }
+    }
+}
+
+processResources {
+    inputs.property 'version', project.mod_version
+    inputs.property 'minecraft_version', project.mc
+    inputs.property 'loader_version', project.fabricLoaderVersion
+    filteringCharset 'UTF-8'
+
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.mod_version,
+                'minecraft_version': project.mc,
+                'loader_version': project.fabricLoaderVersion
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release.set(project.javaVersion)
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archives_base_name}" }
+    }
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "mscpo-serverlist",
+  "version": "${version}",
+  "name": "MSCPO-serverlist",
+  "description": "在原版多人游戏界面右侧增加 MSCPO 服务器列表列，支持搜索、分类筛选、加入、收藏与最近游玩。",
+  "authors": [
+    "mc506lw"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/mscpo-serverlist/logo.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "mc506lw.mscpoServerlist.fabric.MscpoServerlistClient"
+    ],
+    "main": [
+      "mc506lw.mscpoServerlist.fabric.MscpoServerlist"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "mscpo-serverlist.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

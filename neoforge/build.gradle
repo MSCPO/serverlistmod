@@ -1,0 +1,63 @@
+plugins {
+    id 'net.neoforged.moddev' version "$moddevgradle_version"
+    id 'java-library'
+}
+
+apply from: rootProject.file('gradle/mc-versions.gradle')
+
+base {
+    archivesName = project.archives_base_name
+}
+
+version = "${project.mod_version}+NeoForge-${project.mc}"
+group = project.maven_group
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(project.javaVersion)
+    withSourcesJar()
+}
+
+neoForge {
+    version = project.neoForgeVersion
+
+    mods {
+        'mscpo-serverlist' {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir rootProject.file('shared-java')
+            srcDir rootProject.file("gui/${project.mc}/java")
+        }
+        resources {
+            srcDir rootProject.file('shared-resources')
+        }
+    }
+}
+
+processResources {
+    inputs.property 'version', project.mod_version
+    inputs.property 'minecraft_version', project.mc
+    inputs.property 'neo_forge', project.neoForgeVersion
+    filteringCharset 'UTF-8'
+
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand 'version': project.mod_version,
+                'minecraft_version': project.mc,
+                'neo_forge': project.neoForgeVersion
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release.set(project.javaVersion)
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archives_base_name}" }
+    }
+}
