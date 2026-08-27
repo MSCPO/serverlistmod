@@ -78,7 +78,11 @@ public abstract class MultiplayerScreenMixin extends Screen {
 		}
 		if (leftWidth != this.mscpo$lastVanillaWidth) {
 			this.mscpo$lastVanillaWidth = leftWidth;
+			// 1.21.5+ 的 updateSizeAndPosition 在 getSelected() != null 时会 scrollToEntry(selected),
+			// 把滚动位置强制拉回选中条目。这里快照并在调用后恢复,避免选中服务器后列表无法滚动。
+			double scroll = this.serverSelectionList.scrollAmount();
 			this.serverSelectionList.updateSizeAndPosition(leftWidth, contentHeight, 0, headerHeight);
+			this.serverSelectionList.setScrollAmount(scroll);
 		}
 	}
 }

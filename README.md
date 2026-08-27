@@ -65,27 +65,25 @@
 
 ## 构建
 
+需要本机 JDK（`C:\Program Files\Microsoft\jdk-21.0.12.8-hotspot`，26.x 需要 `jdk-25.0.4.7-hotspot`）与 Gradle：
+
 ### 一键构建（推荐）
 
-直接使用本机 `D:\java` 下的 Gradle 9.5.1 与本地 JDK（zulu21 / zulu25）构建全部 12 个产物：
+每个 Minecraft 版本都是独立的 Gradle 子项目（`fabric/<版本>` 与 `neoforge/<版本>`），构建全部由 Gradle 接管：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-all.ps1        # 构建全部版本
-powershell -ExecutionPolicy Bypass -File .\build-all.ps1 1.21.11 # 只构建指定版本
-powershell -ExecutionPolicy Bypass -File .\build-all.ps1 -Copy  # 构建并把 jar 复制到 .\dist
+& 'C:\Users\MSCAo\java\gradle-9.5.1\bin\gradle.bat' buildAll        # 构建全部 12 个产物
+& 'C:\Users\MSCAo\java\gradle-9.5.1\bin\gradle.bat' dist            # 构建全部并把 jar 复制到 .\dist
+& 'C:\Users\MSCAo\java\gradle-9.5.1\bin\gradle.bat' :fabric-26.2:build   # 只构建指定版本/加载器
 ```
 
-支持版本：`26.2`、`26.1.2`、`1.21.11`、`1.21.8`、`1.21.4`、`1.21.1`。
+支持版本：`26.2`、`26.1.2`、`1.21.11`、`1.21.8`、`1.21.4`、`1.21.1`（子项目名 `fabric-26.2`、`neoforge-1.21.11` 等）。
 
-### 手动构建
+> 网络抖动导致依赖下载失败时重跑一次即可（`buildAll` 会跳过已构建产物）。
 
-需要本机 JDK（`D:\java\zulu21`，26.x 需要 `D:\java\zulu25`）与 Gradle：
+### 产物位置
 
-```powershell
-& 'D:\java\gradle-9.5.1\bin\gradle.bat' :fabric:build :neoforge:build -Pmc=1.21.11
-```
-
-产物位于 `fabric\build\libs\` 与 `neoforge\build\libs\`，文件名带 `+<mc版本>` 后缀。
+产物位于各子项目的 `build\libs\`（如 `fabric\26.2\build\libs\`、`neoforge\1.21.11\build\libs\`），文件名带 `+<mc版本>` 后缀；`dist` 任务会汇总到根目录 `dist\`。
 
 ## 项目结构
 
@@ -94,10 +92,12 @@ MSCPO-serverlist/
 ├── shared-java/        # 跨加载器/跨版本的纯 Java 代码（API 客户端、配置存储等）
 ├── shared-resources/   # 共享资源（语言文件、图标、Mixin 配置）
 ├── gui/<mc版本>/java/  # 各 MC 版本专用的 GUI 与 Mixin（统一使用 Mojang 官方映射命名）
-├── fabric/             # Fabric 加载器模块
-└── neoforge/           # NeoForge 加载器模块
+├── gradle/             # 共享构建脚本:mc-versions.gradle(版本矩阵)、fabric.gradle、neoforge.gradle
+├── fabric/             # Fabric 加载器（src/main/resources 元数据 + <mc版本>/ 子项目）
+└── neoforge/           # NeoForge 加载器（src/main/resources 元数据 + <mc版本>/ 子项目）
 ```
 
+- 每个 `fabric/<版本>/build.gradle` / `neoforge/<版本>/build.gradle` 只设置 `mc` 并引入共享脚本 `gradle/fabric.gradle` / `gradle/neoforge.gradle`，由 `settings.gradle` 自动注册。
 - 两个加载器共享同一份 `gui/<版本>` 源码（Mojang 官方映射，Fabric 侧亦使用 `officialMojangMappings`）。
 - 1.21.x（混淆版本）Fabric 使用常规 remap 插件；26.x（Mojang 已停止混淆的版本）Fabric 使用无 remap 插件 `net.fabricmc.fabric-loom`，加载器/API 以普通 `implementation` 依赖引入。
 

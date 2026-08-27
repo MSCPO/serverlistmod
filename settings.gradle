@@ -28,4 +28,14 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = 'MSCPO-serverlist'
-include 'fabric', 'neoforge'
+
+// 每个支持的 Minecraft 版本注册独立的 fabric / neoforge 子项目,
+// 子项目目录名即版本号(见 fabric/<mc>/build.gradle 与 neoforge/<mc>/build.gradle)。
+// 构建全部版本:gradle buildAll   构建单个版本:gradle :fabric-26.2:build
+def supportedVersions = ['26.2', '26.1.2', '1.21.11', '1.21.8', '1.21.4', '1.21.1']
+supportedVersions.each { version ->
+    include "fabric-$version"
+    project(":fabric-$version").projectDir = file("fabric/$version")
+    include "neoforge-$version"
+    project(":neoforge-$version").projectDir = file("neoforge/$version")
+}
