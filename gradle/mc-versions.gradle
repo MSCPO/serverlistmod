@@ -40,7 +40,7 @@ def matrix = [
     ],
 ]
 
-def mc = providers.gradleProperty('mc').getOrElse('1.21.11')
+def mc = project.ext.mc
 def entry = matrix[mc]
 if (entry == null) {
     throw new GradleException("Unknown Minecraft version '${mc}'. Supported: ${matrix.keySet().sort()}")

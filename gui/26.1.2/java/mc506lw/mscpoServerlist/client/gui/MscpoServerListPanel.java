@@ -273,7 +273,10 @@ public class MscpoServerListPanel extends AbstractContainerWidget {
 		int listY = yCursor + btnHeight + 4;
 		int listBottom = y + h - 26;
 		int listH = Math.max(24, listBottom - listY);
+		// 1.21.5+ 的 updateSizeAndPosition 会用 scrollToEntry 把滚动拉回选中条目,这里快照/恢复滚动位置
+		double scroll = this.serverList.scrollAmount();
 		this.serverList.updateSizeAndPosition(innerW, listH, contentX, listY);
+		this.serverList.setScrollAmount(scroll);
 
 		int btnY = y + h - 22;
 		this.joinButton.setSize(half, 20);

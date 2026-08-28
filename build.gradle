@@ -1,10 +1,47 @@
 allprojects {
     group = project.maven_group
-    version = "${project.mod_version}+${project.mc}"
 }
+
+// subproject version is set in gradle/fabric.gradle and gradle/neoforge.gradle
+// (it needs ext.mc, which each subproject build.gradle defines first).
 
 subprojects {
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = 'UTF-8'
+    }
+}
+
+// Supported Minecraft versions, in build order (must match settings.gradle).
+def supportedVersions = ['26.2', '26.1.2', '1.21.11', '1.21.8', '1.21.4', '1.21.1']
+def allBuildTasks = supportedVersions.collectMany { v -> [":fabric-$v:build", ":neoforge-$v:build"] }
+
+// Build fabric & neoforge for every supported Minecraft version (replaces build-all.ps1).
+tasks.register('buildAll') {
+    group = 'build'
+    description = 'Build fabric and neoforge jars for all supported Minecraft versions'
+    dependsOn allBuildTasks
+}
+
+// Copy every built jar (excluding sources) into the root dist/ directory.
+tasks.register('dist') {
+    group = 'build'
+    description = 'Copy all built jars (excluding sources) into dist/'
+    dependsOn tasks.named('buildAll')
+    doLast {
+        def dist = rootProject.file('dist')
+        dist.mkdirs()
+        supportedVersions.each { v ->
+            [":fabric-$v", ":neoforge-$v"].each { path ->
+                def libs = project(path).layout.buildDirectory.dir('libs').get().asFile
+                libs.listFiles()?.findAll { it.name.endsWith('.jar') && !it.name.endsWith('-sources.jar') }
+                    ?.each { jar ->
+                        copy {
+                            from jar
+                            into dist
+                        }
+                    }
+            }
+        }
+        logger.lifecycle("Jars copied to {}", dist)
     }
 }
